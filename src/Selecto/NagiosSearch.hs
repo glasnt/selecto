@@ -12,7 +12,7 @@
 module Selecto.NagiosSearch where
 
 import Chevalier.Types (SourceQuery (..))
-import Chevalier.Util (buildFuzzyRequestTag)
+import Chevalier.Util (buildFuzzyRequestFromPairs)
 import Control.Applicative
 import Control.Concurrent hiding (yield)
 import Control.Monad.IO.Class
@@ -39,7 +39,7 @@ nagiosSearch chevalier_mvar = do
             "SYD1" -> "R82KX1"
             "LAX1" -> "LMRH8C"
 
-    let query = buildFuzzyRequestTag host service
+    let query = buildFuzzyRequestFromPairs [("host", host), ("service",service)]
 
     maybe_response <- liftIO $ do
         response_mvar <- newEmptyMVar

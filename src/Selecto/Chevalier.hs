@@ -75,16 +75,9 @@ chevalier chevalier_url query_mvar =
                  | LT.null txt = txt
                  | otherwise   = LT.init txt
 
-    buildChevalierRequest (SourceQuery  q _ page page_size _ ) = SourceRequest
+    buildChevalierRequest (SourceQuery  q _ page page_size _ _ ) = SourceRequest
 	{ requestTags    = putField $ q
 	, startPage      = putField $ Just $ fromIntegral page
 	, sourcesPerPage = putField $ Just $ fromIntegral page_size
 	, addressKey     = putField Nothing
 	}
-
-    buildTags q =
-        let k, v = splitOn wildcard q
-        in  [SourceTag { field = putField k, value = putField (wrap v)} | k, v <- values ]
-      where
-        wildcard = "*"
-        wrap v =  append wildcard $ append v $ wildcard
