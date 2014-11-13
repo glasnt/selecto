@@ -27,8 +27,6 @@ import Snap.Core (urlEncode)
 import System.Timeout (timeout)
 import System.ZMQ4 hiding (source)
 
--- | Chevalier communication thread, reads SourceQuery requsts from an mvar and
--- replies over the included mvar.
 chevalier :: String -> MVar SourceQuery -> IO ()
 chevalier chevalier_url query_mvar =
     withContext $ \c -> withSocket c Req $ \s -> do
@@ -77,16 +75,16 @@ chevalier chevalier_url query_mvar =
                  | LT.null txt = txt
                  | otherwise   = LT.init txt
 
-    buildChevalierRequest (SourceQuery q address page page_size _ _ ) = SourceRequest
-	{ requestTags    = putField $ buildTags q
+    buildChevalierRequest (SourceQuery  q _ page page_size _ ) = SourceRequest
+	{ requestTags    = putField $ q
 	, startPage      = putField $ Just $ fromIntegral page
 	, sourcesPerPage = putField $ Just $ fromIntegral page_size
 	, addressKey     = putField Nothing
 	}
 
     buildTags q =
-        let values = splitOn wildcard q
-        in  [SourceTag { field = putField wildcard, value = putField (wrap a)} | a <- values ]
+        let k, v = splitOn wildcard q
+        in  [SourceTag { field = putField k, value = putField (wrap v)} | k, v <- values ]
       where
         wildcard = "*"
         wrap v =  append wildcard $ append v $ wildcard

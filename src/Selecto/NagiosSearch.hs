@@ -12,6 +12,7 @@
 module Selecto.NagiosSearch where
 
 import Chevalier.Types (SourceQuery (..))
+import Chevalier.Util (buildFuzzyRequestTag)
 import Control.Applicative
 import Control.Concurrent hiding (yield)
 import Control.Monad.IO.Class
@@ -29,10 +30,7 @@ nagiosSearch chevalier_mvar = do
     origin_alias <- getParam "origin" >>= (\o -> case o of
         Just bs -> utf8Or400 bs
         Nothing -> writeError 400 $ stringUtf8 "Must specify 'origin'")
-
  
-    -- Address can be used to get information based on an ID
-    -- Follows the logic of query - if wildcard, return all things (no filtering on addres)
     address   <- utf8Or400 =<< fromMaybe "*" <$> getParam "address"
     page      <- toInt     <$> fromMaybe "0"  <$> getParam "page"
     page_size <- toInt     <$> fromMaybe "64" <$> getParam "page_size"
@@ -41,7 +39,7 @@ nagiosSearch chevalier_mvar = do
             "SYD1" -> "R82KX1"
             "LAX1" -> "LMRH8C"
 
-    let query = host
+    let query = buildFuzzyRequestTag host service
 
     maybe_response <- liftIO $ do
         response_mvar <- newEmptyMVar

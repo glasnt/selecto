@@ -15,7 +15,6 @@ import Control.Concurrent
 import Control.Concurrent.Async
 import Control.Monad
 import Selecto.Chevalier (chevalier)
-import Selecto.SimpleSearch (simpleSearch)
 import Selecto.NagiosSearch (nagiosSearch)
 import Snap.Core
 import Snap.Http.Server
@@ -32,8 +31,7 @@ main = do
 
     quickHttpServe $
         ifTop (writeBS docString) <|>
-        route [ ("suggest/search/:q", simpleSearch chevalier_query_mvar)
-              , ("suggest/nagios/:origin/host/:host/service/:service", nagiosSearch chevalier_query_mvar)]
+        route [("suggest/nagios/:origin/host/:host/service/:service", nagiosSearch chevalier_query_mvar)]
 
   where
     -- Wait for any thread to explode, then restart it whilst logging the
