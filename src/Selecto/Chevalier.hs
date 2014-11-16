@@ -76,7 +76,7 @@ chevalier chevalier_url query_mvar =
                  | otherwise   = LT.init txt
 
     buildChevalierRequest (SourceQuery  q _ page page_size _ _ ) = SourceRequest
-	{ requestTags    = putField $ q
+	{ requestTags    = q --putField $ q
 	, startPage      = putField $ Just $ fromIntegral page
 	, sourcesPerPage = putField $ Just $ fromIntegral page_size
 	, addressKey     = putField Nothing
